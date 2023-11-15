@@ -1,0 +1,37 @@
+#!/bin/bash
+
+
+echo "Usage: bash gdown filename.extension fileid"
+
+fileNAME=$1
+fileID=$2
+
+echo -n $fileNAME > /tmp/name
+echo -n $fileID > /tmp/id
+[ -s /tmp/name ] || echo Missing File NAME
+[ -s /tmp/id ] || echo Missing File ID
+
+
+
+echo "Download Google Drive via fileID on curl & wget "
+echo "File NAME: $fileNAME"
+echo "File ID: $fileID"
+echo "Downloading..."
+
+
+rm -rf /tmp/cookies.txt
+rm -rf /tmp/name
+rm -rf /tmp/id
+
+if [[ curl > /dev/null ]]
+
+then 
+    confirmCode=$(wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1BvjS_UyoDpD2LHT0ZIM6s6ghpj27SIHm' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1BvjS_UyoDpD2LHT0ZIM6s6ghpj27SIHm" -O trevzCTF.tar.gz )
+
+else 
+    confirmCode=$(curl -skLc /tmp/cookies.txt "https://docs.google.com/uc?export=download&id=$fileID" | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p'); curl -kLb /tmp/cookies.txt -o $fileNAME "https://docs.google.com/uc?export=download&confirm=$confirmCode&id=$fileID"
+     
+fi
+
+echo "Download complete !!!"
+
